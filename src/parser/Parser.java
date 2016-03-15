@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import parser.expressions.BinaryExpression;
 import parser.expressions.Expression;
+import parser.expressions.LnFunction;
 import parser.expressions.NumberExpression;
+import parser.expressions.SqrtFunction;
 import parser.expressions.UnaryExpression;
 
 public class Parser {
@@ -33,16 +35,35 @@ public class Parser {
         return parseAddition();
     }
 
+  /*  private Expression parseFunction() throws IncorrectSymbolException{
+        
+        Expression resulExpression = parseAddition();
+        
+        while (true) {
+            if (match(TokenType.SQRT)) {
+                
+                resulExpression = new LnFunction(resulExpression);
+                continue;
+            }
+            if (match(TokenType.SQRT)) {
+                resulExpression = new SqrtFunction(resulExpression);
+                continue;
+            }
+            break;
+        }
+        return parseExpression();
+    } */
+    
     private Expression parseAddition() throws IncorrectSymbolException {
         Expression resulExpression = parseMultiplicate();
         
         while (true) {
             if (match(TokenType.PLUS)) {
-                resulExpression = new BinaryExpression(resulExpression, parseMultiplicate(), '+');
+                resulExpression = new BinaryExpression(resulExpression, parseMultiplicate(), TokenType.PLUS);
                 continue;
             }
             if (match(TokenType.MINUS)) {
-                resulExpression = new BinaryExpression(resulExpression, parseMultiplicate(), '-');
+                resulExpression = new BinaryExpression(resulExpression, parseMultiplicate(), TokenType.MINUS);
                 continue;
             }
             break;
@@ -55,11 +76,11 @@ public class Parser {
         Expression resulExpression = parseUnary();
         while (true) {
             if (match(TokenType.STAR)) {
-                resulExpression = new BinaryExpression(resulExpression, parseUnary(), '*');
+                resulExpression = new BinaryExpression(resulExpression, parseUnary(), TokenType.STAR);
                 continue;
             }
             if (match(TokenType.SLASH)) {
-                resulExpression = new BinaryExpression(resulExpression, parseUnary(), '/');
+                resulExpression = new BinaryExpression(resulExpression, parseUnary(), TokenType.SLASH);
                 continue;
             }
             break;
@@ -69,7 +90,7 @@ public class Parser {
 
     private Expression parseUnary() throws IncorrectSymbolException {
         if(match(TokenType.MINUS)){
-            return new UnaryExpression('-', parseSummand());
+            return new UnaryExpression(TokenType.MINUS, parseSummand());
         }
         if(match(TokenType.PLUS)){
             return parseSummand();

@@ -2,8 +2,11 @@ package parser;
 
 public enum TokenType {
     
-    NUMBER,
+    NUMBER,   
     WORD,
+        
+    LN,
+    SQRT,    
     
     STAR,
     SLASH,

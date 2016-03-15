@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Lexer {
     
-    private static final String OPERATOR_CHARS = "+-*/()";
+  //  private static final String OPERATOR_CHARS = "+-*/()";
     private static final TokenType[] OPERATOR_TOKENS = new TokenType[]{
         TokenType.PLUS, TokenType.MINUS,
         TokenType.STAR, TokenType.SLASH,
@@ -25,12 +25,14 @@ public class Lexer {
     }   
     
     public List<Token> tokenize(){
+        String OPERATOR_CHARS = "+-*/()";
         while(pos < length){
             final char currentChar = lookToken(0);
             if(Character.isDigit(currentChar)) tokenizeNumber();
             else if(Character.isLetter(currentChar)) tokenizeWord();
             
-            else if(OPERATOR_CHARS.indexOf(currentChar)!=-1){ 
+            else if(OPERATOR_CHARS.indexOf(currentChar)!=-1){
+                
                 tokenizeOperator();
             }
             else {
@@ -41,16 +43,27 @@ public class Lexer {
     }
     
     private void tokenizeWord(){
-        StringBuilder currentNumber = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
         char currentChar = lookToken(0);
         while(true){            
             if(!Character.isLetterOrDigit(currentChar)){
                 break;
             }
-            currentNumber.append(currentChar);
+            buffer.append(currentChar);
             currentChar = next();
+        }        
+        switch (buffer.toString()) {
+            case "ln":
+                addToken(TokenType.LN);
+                break;
+            case "sqrt":
+                addToken(TokenType.SQRT);
+                break;
+            default:
+                addToken(TokenType.WORD, buffer.toString());
+                break;
         }
-        addToken(TokenType.WORD,currentNumber.toString());
+       // addToken(TokenType.WORD,buffer.toString());
     }
     
     private void tokenizeNumber() {
@@ -69,6 +82,7 @@ public class Lexer {
     }
     
     private void tokenizeOperator(){
+        String OPERATOR_CHARS = "+-*/()";
         int operatorPosition = OPERATOR_CHARS.indexOf(lookToken(0));
         addToken(OPERATOR_TOKENS[operatorPosition]);
         next();

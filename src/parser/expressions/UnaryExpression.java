@@ -1,11 +1,13 @@
 package parser.expressions;
 
+import parser.TokenType;
+
 public class UnaryExpression implements Expression{
 
     private final Expression exp1;
-    private final char operation;
+    private final TokenType operation;
     
-    public UnaryExpression(char operation, Expression exp1) {
+    public UnaryExpression(TokenType operation, Expression exp1) {
         this.operation = operation;
         this.exp1 = exp1;
     }
@@ -14,18 +16,18 @@ public class UnaryExpression implements Expression{
     @Override
     public double expValue() {
         
-        switch(operation){
-            case '-': return -exp1.expValue();
-            case '+': 
+        switch(operation.toString()){
+            case "MINUS": return -exp1.expValue();
+            case "PLUS": 
                 default: return +exp1.expValue();
         }
         
     }
 
-    @Override
+  /*  @Override
     public String toString() {
         return String.format("%c %s",operation,exp1);
-    }
+    }*/
     
     
     
