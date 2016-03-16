@@ -53,10 +53,10 @@ public class Lexer {
             currentChar = next();
         }        
         switch (buffer.toString()) {
-            case "ln":
+            case "LN":
                 addToken(TokenType.LN);
                 break;
-            case "sqrt":
+            case "SQRT":
                 addToken(TokenType.SQRT);
                 break;
             default:

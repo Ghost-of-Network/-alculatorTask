@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import parser.expressions.BinaryExpression;
 import parser.expressions.Expression;
-import parser.expressions.LnFunction;
+import library.LnFunction;
 import parser.expressions.NumberExpression;
-import parser.expressions.SqrtFunction;
+import library.SqrtFunction;
 import parser.expressions.UnaryExpression;
 
 public class Parser {
@@ -25,38 +25,55 @@ public class Parser {
 
     public List<Expression> parse() throws IncorrectSymbolException {
         List<Expression> result = new ArrayList<>();
-        while(!match(TokenType.EOF)){
-            result.add(parseExpression());
+        while (!match(TokenType.EOF)) {
+            result.add(parseFunction());
         }
         return result;
     }
-    
-    private Expression parseExpression() throws IncorrectSymbolException{
+
+    private Expression parseFunction() throws IncorrectSymbolException {
+
+        Expression resulExpression;
+
+        // while (true) {
+        switch (getCurrentTokenType().toString()) {
+            case "LN":
+                pos++;
+                resulExpression = new LnFunction(parseFunction());
+                break;
+            case "SQRT":
+                pos++;
+                resulExpression = new SqrtFunction(parseFunction());
+                break;
+            case "OPEN_BRACE": {
+                pos++;
+                resulExpression = parseFunction();
+                // pos++;
+                if (match(TokenType.CLOSE_BRACE));
+                {
+                    if (!match(TokenType.EOF)) {
+                        
+                        resulExpression = parseFunction();
+                    }
+                    //throw new IncorrectSymbolException("Perhaps this symbol excess111: " + get(0).getType().toString());
+                }
+                return resulExpression;
+            }
+            default:
+                resulExpression = parseExpression();
+                break;
+        }
+        //}
+        return resulExpression;
+    }
+
+    private Expression parseExpression() throws IncorrectSymbolException {
         return parseAddition();
     }
 
-  /*  private Expression parseFunction() throws IncorrectSymbolException{
-        
-        Expression resulExpression = parseAddition();
-        
-        while (true) {
-            if (match(TokenType.SQRT)) {
-                
-                resulExpression = new LnFunction(resulExpression);
-                continue;
-            }
-            if (match(TokenType.SQRT)) {
-                resulExpression = new SqrtFunction(resulExpression);
-                continue;
-            }
-            break;
-        }
-        return parseExpression();
-    } */
-    
     private Expression parseAddition() throws IncorrectSymbolException {
         Expression resulExpression = parseMultiplicate();
-        
+
         while (true) {
             if (match(TokenType.PLUS)) {
                 resulExpression = new BinaryExpression(resulExpression, parseMultiplicate(), TokenType.PLUS);
@@ -89,10 +106,10 @@ public class Parser {
     }
 
     private Expression parseUnary() throws IncorrectSymbolException {
-        if(match(TokenType.MINUS)){
+        if (match(TokenType.MINUS)) {
             return new UnaryExpression(TokenType.MINUS, parseSummand());
         }
-        if(match(TokenType.PLUS)){
+        if (match(TokenType.PLUS)) {
             return parseSummand();
         }
         return parseSummand();
@@ -103,10 +120,11 @@ public class Parser {
         if (match(TokenType.NUMBER)) {
             return new NumberExpression(Double.parseDouble(currentToken.getText()));
         }
-        if(match(TokenType.OPEN_BRACE)){
-            Expression result = parseExpression();
-            if(match(TokenType.CLOSE_BRACE));
-            return result;    
+        if (match(TokenType.OPEN_BRACE)) {
+            //    Expression result = parseExpression();
+            Expression result = parseFunction();
+            if (match(TokenType.CLOSE_BRACE));
+            return result;
         }
         throw new IncorrectSymbolException("Perhaps this symbol excess: " + currentToken.toString());
     }
@@ -118,6 +136,11 @@ public class Parser {
         }
         pos++;
         return true;
+    }
+
+    private TokenType getCurrentTokenType() {
+        TokenType currentToken = get(0).getType();
+        return currentToken;
     }
 
     private Token get(int relativePosition) {

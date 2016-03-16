@@ -11,7 +11,10 @@ public class CalculatorTask {
 
     public static void main(String[] args) throws IncorrectSymbolException{
        
+            
+       //   String inputExpression = "LN(2+2*2/2*(LN(2)))";
         String inputExpression = "((2.5+2.5)*3.5)";
+      //  String inputExpression = "(2*2)";
      //   String statement = "((2.5+2.5)*(((((-3.5)";
         
         List<Token> tokens = new Lexer(inputExpression).tokenize();

@@ -1,4 +1,6 @@
-package parser.expressions;
+package library;
+
+import parser.expressions.Expression;
 
 public class LnFunction implements Expression{
     
