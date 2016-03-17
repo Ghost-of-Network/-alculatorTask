@@ -12,6 +12,6 @@ public class IncorrectSymbolException extends Exception{
 
     @Override
     public String toString() {
-        return "Exception IncorrectSymbolException: " + message;
+        return "IncorrectSymbolException: " + message;
     }
 }

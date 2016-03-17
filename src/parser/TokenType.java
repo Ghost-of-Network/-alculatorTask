@@ -1,21 +1,27 @@
 package parser;
 
 public enum TokenType {
-    
-    NUMBER,   
+
+    // Base tokens
+    NUMBER,
     WORD,
-        
-    LN,
-    SQRT,    
     
+    // Functions
+    LN,
+    SQRT,
+    COS,
+    SIN,
+    
+    // Base operations
     STAR,
     SLASH,
     PLUS,
     MINUS,
     
+    // Brace
     OPEN_BRACE,
     CLOSE_BRACE,
     
-    EOF  
-    
+    // End of file
+    EOF
 }

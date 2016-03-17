@@ -1,13 +1,13 @@
 package parser;
 
 import exceptions.IncorrectSymbolException;
-import java.util.ArrayList;
+import exceptions.WrongNumberCloseBraceException;
+import exceptions.WrongNumberOpenBraceException;
 import java.util.List;
 import parser.expressions.BinaryExpression;
 import parser.expressions.Expression;
-import library.LnFunction;
+import library.Functions;
 import parser.expressions.NumberExpression;
-import library.SqrtFunction;
 import parser.expressions.UnaryExpression;
 
 public class Parser {
@@ -23,55 +23,47 @@ public class Parser {
         size = tokens.size();
     }
 
-    public List<Expression> parse() throws IncorrectSymbolException {
-        List<Expression> result = new ArrayList<>();
+    public Expression parse() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
+        Expression result = null;
         while (!match(TokenType.EOF)) {
-            result.add(parseFunction());
+            result = parseFunction();
         }
         return result;
     }
 
-    private Expression parseFunction() throws IncorrectSymbolException {
+    private Expression parseFunction() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
 
         Expression resulExpression;
 
-        // while (true) {
         switch (getCurrentTokenType().toString()) {
             case "LN":
                 pos++;
-                resulExpression = new LnFunction(parseFunction());
+                resulExpression = Functions.lnFunction(parseFunction());
                 break;
             case "SQRT":
                 pos++;
-                resulExpression = new SqrtFunction(parseFunction());
+                resulExpression = Functions.sqrtFunction(parseFunction());
                 break;
-            case "OPEN_BRACE": {
+            case "COS":
                 pos++;
-                resulExpression = parseFunction();
-                // pos++;
-                if (match(TokenType.CLOSE_BRACE));
-                {
-                    if (!match(TokenType.EOF)) {
-                        
-                        resulExpression = parseFunction();
-                    }
-                    //throw new IncorrectSymbolException("Perhaps this symbol excess111: " + get(0).getType().toString());
-                }
-                return resulExpression;
-            }
+                resulExpression = Functions.cosFunction(parseFunction());
+                break;
+            case "SIN":
+                pos++;
+                resulExpression = Functions.sinFunction(parseFunction());
+                break;
             default:
                 resulExpression = parseExpression();
                 break;
         }
-        //}
         return resulExpression;
     }
 
-    private Expression parseExpression() throws IncorrectSymbolException {
+    private Expression parseExpression() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
         return parseAddition();
     }
 
-    private Expression parseAddition() throws IncorrectSymbolException {
+    private Expression parseAddition() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
         Expression resulExpression = parseMultiplicate();
 
         while (true) {
@@ -88,7 +80,7 @@ public class Parser {
         return resulExpression;
     }
 
-    private Expression parseMultiplicate() throws IncorrectSymbolException {
+    private Expression parseMultiplicate() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
 
         Expression resulExpression = parseUnary();
         while (true) {
@@ -105,7 +97,7 @@ public class Parser {
         return resulExpression;
     }
 
-    private Expression parseUnary() throws IncorrectSymbolException {
+    private Expression parseUnary() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
         if (match(TokenType.MINUS)) {
             return new UnaryExpression(TokenType.MINUS, parseSummand());
         }
@@ -115,23 +107,27 @@ public class Parser {
         return parseSummand();
     }
 
-    private Expression parseSummand() throws IncorrectSymbolException {
+    private Expression parseSummand() throws IncorrectSymbolException, WrongNumberOpenBraceException, WrongNumberCloseBraceException {
         final Token currentToken = get(0);
         if (match(TokenType.NUMBER)) {
             return new NumberExpression(Double.parseDouble(currentToken.getText()));
         }
         if (match(TokenType.OPEN_BRACE)) {
-            //    Expression result = parseExpression();
             Expression result = parseFunction();
-            if (match(TokenType.CLOSE_BRACE));
+            if (!match(TokenType.CLOSE_BRACE)) {
+                throw new WrongNumberOpenBraceException("The number of opening brace more than closing");
+            }
             return result;
+        }
+        if ("CLOSE_BRACE".equals(currentToken.getType().toString())) {
+            throw new WrongNumberCloseBraceException("The number of closing brace more than opening");
         }
         throw new IncorrectSymbolException("Perhaps this symbol excess: " + currentToken.toString());
     }
 
     private boolean match(TokenType type) {
         final Token currentToken = get(0);
-        if (currentToken.getType() != type) {
+        if (type != currentToken.getType()) {
             return false;
         }
         pos++;
