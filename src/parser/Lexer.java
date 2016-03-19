@@ -1,5 +1,7 @@
 package parser;
 
+import exceptions.IncorrectSymbolException;
+import exceptions.InvalidDoubleException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +19,14 @@ public class Lexer {
     private final int length;
 
     public Lexer(String input) {
-        
+
         this.input = input.toUpperCase();
         length = input.length();
         tokens = new ArrayList<>();
         pos = 0;
     }
 
-    public List<Token> tokenize() {
+    public List<Token> tokenize() throws IncorrectSymbolException, InvalidDoubleException {
         String OPERATOR_CHARS = "+-*/()";
         while (pos < length) {
             final char currentChar = lookToken(0);
@@ -33,10 +35,9 @@ public class Lexer {
             } else if (Character.isLetter(currentChar)) {
                 tokenizeWord();
             } else if (OPERATOR_CHARS.indexOf(currentChar) != -1) {
-
                 tokenizeOperator();
             } else {
-                next();
+                throw new IncorrectSymbolException("Perhaps this symbol excess: " + lookToken(0));
             }
         }
         return tokens;
@@ -71,13 +72,13 @@ public class Lexer {
         }
     }
 
-    private void tokenizeNumber() {
+    private void tokenizeNumber() throws InvalidDoubleException {
         StringBuilder currentNumber = new StringBuilder();
         char currentChar = lookToken(0);
         while (true) {
             if (currentChar == '.') {
                 if (currentNumber.indexOf(".") != -1) {
-                    throw new RuntimeException("Invalid double");
+                    throw new InvalidDoubleException("Invalid double, perhaps number contains more than one point");
                 }
             } else if (!Character.isDigit(currentChar)) {
                 break;

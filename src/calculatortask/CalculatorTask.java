@@ -9,7 +9,7 @@ import parser.expressions.Expression;
 public class CalculatorTask {
 
     public static void main(String[] args) throws Exception {
-        String inputExpression = "((2.5+2.51)*3.5+PI)";
+        String inputExpression = "((2.5+2.51)*3.5)";
 
         calculateExpression(inputExpression);
     }
@@ -17,7 +17,7 @@ public class CalculatorTask {
     public static double calculateExpression(String inputExpression) throws Exception {
         List<Token> tokens = new Lexer(inputExpression).tokenize();
 
-       /* for (Token token : tokens) {
+      /*  for (Token token : tokens) {
          System.out.println(token.toString());
          } */
         

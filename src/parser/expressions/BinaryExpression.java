@@ -39,9 +39,4 @@ public class BinaryExpression implements Expression {
                 return exp1.expValue() + exp2.expValue();
         }
     }
-
-    @Override
-    public String toString() {
-        return (String)(exp1.toString() + operator.toString() + exp2.toString());
-    }
 }

@@ -1,6 +1,7 @@
 package calculatortask;
 
 import exceptions.IncorrectSymbolException;
+import exceptions.InvalidDoubleException;
 import exceptions.WrongNumberCloseBraceException;
 import exceptions.WrongNumberOpenBraceException;
 import org.junit.Assert;
@@ -87,5 +88,15 @@ public class CalculatorTaskTest extends Assert {
     @Test(expected = IncorrectSymbolException.class)
     public void testcalculateExpression13() throws Exception {
         CalculatorTask.calculateExpression("4+(2-a)");
+    }
+
+    @Test(expected = IncorrectSymbolException.class)
+    public void testcalculateExpression14() throws Exception {
+        CalculatorTask.calculateExpression("4+(2-&)");
+    }
+
+    @Test(expected = InvalidDoubleException.class)
+    public void testcalculateExpression15() throws Exception {
+        CalculatorTask.calculateExpression("4.2.3+2");
     }
 }
